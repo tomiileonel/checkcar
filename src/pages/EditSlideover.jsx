@@ -12,16 +12,24 @@ export default function EditSlideover({ order, onClose }) {
     const [cost, setCost] = useState(order.cost || 0);
     const [exitDate, setExitDate] = useState(order.exitDate || "");
     const [notes, setNotes] = useState(order.problem);
+    const [saving, setSaving] = useState(false);
 
-    const handleSave = () => {
-        updateOrder(order.id, {
-            status,
-            cost: Number(cost),
-            exitDate: exitDate || null,
-            problem: notes,
-        });
-        notify(`Orden ${order.id} actualizada`);
-        onClose();
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await updateOrder(order.id, {
+                status,
+                cost: Number(cost),
+                exitDate: exitDate || null,
+                problem: notes,
+            });
+            notify(`Orden ${order.id} actualizada`);
+            onClose();
+        } catch (err) {
+            notify("Error al actualizar la orden", "error");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -137,8 +145,8 @@ export default function EditSlideover({ order, onClose }) {
                         </div>
 
                         <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                            <button className="btn-navy" onClick={handleSave} style={{ flex: 1 }}>
-                                Guardar Cambios
+                            <button className="btn-navy" onClick={handleSave} style={{ flex: 1 }} disabled={saving}>
+                                {saving ? "Guardando..." : "Guardar Cambios"}
                             </button>
                             <button className="btn-ghost" onClick={onClose}>
                                 Cancelar

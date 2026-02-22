@@ -31,6 +31,7 @@ export default function AdminIntakeForm() {
     const { addOrder, notify } = useAppContext();
     const [form, setForm] = useState(INITIAL_FORM);
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (field, value) => {
         setForm((prev) => ({ ...prev, [field]: value }));
@@ -43,7 +44,7 @@ export default function AdminIntakeForm() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validateAdminForm(form);
         if (Object.keys(validationErrors).length > 0) {
@@ -52,18 +53,24 @@ export default function AdminIntakeForm() {
             return;
         }
 
-        addOrder({
-            ...form,
-            year: Number(form.year) || 0,
-            km: Number(form.km) || 0,
-            cost: Number(form.cost) || 0,
-            source: "admin",
-            exitDate: null,
-        });
+        setLoading(true);
+        try {
+            await addOrder({
+                ...form,
+                year: Number(form.year) || 0,
+                km: Number(form.km) || 0,
+                cost: Number(form.cost) || 0,
+                source: "admin",
+            });
 
-        setForm(INITIAL_FORM);
-        setErrors({});
-        notify("Orden creada exitosamente");
+            setForm(INITIAL_FORM);
+            setErrors({});
+            notify("Orden creada exitosamente");
+        } catch (err) {
+            notify("Error al crear la orden", "error");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -156,8 +163,8 @@ export default function AdminIntakeForm() {
                 {errors.problem && <div className="field-error">{errors.problem}</div>}
             </div>
 
-            <button className="btn-navy" type="submit" style={{ alignSelf: "flex-start" }}>
-                Crear Orden
+            <button className="btn-navy" type="submit" style={{ alignSelf: "flex-start" }} disabled={loading}>
+                {loading ? "Creando..." : "Crear Orden"}
             </button>
         </form>
     );

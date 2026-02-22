@@ -2,12 +2,17 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  // Base para servir desde WAMP: localhost/proyectos/checkcar/
-  base: '/proyectos/checkcar/',
   plugins: [react()],
   server: {
     port: 3000,
     open: true,
+    // Proxy para redirigir las llamadas /api al backend Express
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',

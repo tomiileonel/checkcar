@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import { FormField, FormRow } from "../components/FormField";
 
@@ -31,9 +32,11 @@ function validateForm(form) {
 
 export default function ClientForm() {
     const { addOrder, notify } = useAppContext();
+    const navigate = useNavigate();
     const [form, setForm] = useState(INITIAL_FORM);
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (field, value) => {
         setForm((prev) => ({ ...prev, [field]: value }));
@@ -46,7 +49,7 @@ export default function ClientForm() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validateForm(form);
         if (Object.keys(validationErrors).length > 0) {
@@ -55,21 +58,26 @@ export default function ClientForm() {
             return;
         }
 
-        addOrder({
-            ...form,
-            year: Number(form.year),
-            km: Number(form.km) || 0,
-            status: "pendiente",
-            source: "client",
-            exitDate: null,
-            estimatedExit: null,
-            cost: 0,
-        });
+        setLoading(true);
+        try {
+            await addOrder({
+                ...form,
+                year: Number(form.year),
+                km: Number(form.km) || 0,
+                status: "pendiente",
+                source: "client",
+                cost: 0,
+            });
 
-        setForm(INITIAL_FORM);
-        setErrors({});
-        setSubmitted(true);
-        notify("¡Solicitud enviada exitosamente!");
+            setForm(INITIAL_FORM);
+            setErrors({});
+            setSubmitted(true);
+            notify("¡Solicitud enviada exitosamente!");
+        } catch (err) {
+            notify("Error al enviar la solicitud. Intente de nuevo.", "error");
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (submitted) {
@@ -91,9 +99,14 @@ export default function ClientForm() {
                     <p style={{ color: "var(--text-muted)", marginBottom: 24 }}>
                         Nos pondremos en contacto con usted a la brevedad.
                     </p>
-                    <button className="btn-navy" onClick={() => setSubmitted(false)}>
-                        Enviar otra solicitud
-                    </button>
+                    <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+                        <button className="btn-navy" onClick={() => setSubmitted(false)}>
+                            Enviar otra solicitud
+                        </button>
+                        <button className="btn-ghost" onClick={() => navigate("/")}>
+                            Volver al inicio
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -200,8 +213,8 @@ export default function ClientForm() {
                     />
                 </FormField>
 
-                <button className="btn-red" type="submit" style={{ width: "100%", marginTop: 8 }}>
-                    Enviar Solicitud
+                <button className="btn-red" type="submit" style={{ width: "100%", marginTop: 8 }} disabled={loading}>
+                    {loading ? "Enviando..." : "Enviar Solicitud"}
                 </button>
             </form>
         </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import Logo from "./Logo";
 import AdminUserMenu from "./AdminUserMenu";
@@ -8,14 +9,17 @@ import AdminUserMenu from "./AdminUserMenu";
 // ─────────────────────────────────────────────
 
 export default function Navbar() {
-    const { view, setView, admin, setAdmin } = useAppContext();
+    const { admin, logoutAdmin } = useAppContext();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const isLanding = location.pathname === "/";
 
     return (
         <nav className="nav-bar">
             {/* Brand / Logo */}
             <div
                 style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
-                onClick={() => setView("landing")}
+                onClick={() => navigate("/")}
             >
                 <Logo />
                 <div>
@@ -46,22 +50,22 @@ export default function Navbar() {
 
             {/* Actions */}
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                {view !== "landing" && (
+                {!isLanding && (
                     <button
                         className="btn-ghost"
                         style={{ padding: "8px 16px", fontSize: 12 }}
-                        onClick={() => setView("landing")}
+                        onClick={() => navigate("/")}
                     >
                         ← Volver al inicio
                     </button>
                 )}
 
                 {admin && (
-                    <AdminUserMenu admin={admin} setAdmin={setAdmin} setView={setView} />
+                    <AdminUserMenu admin={admin} logoutAdmin={logoutAdmin} navigate={navigate} />
                 )}
 
-                {!admin && view !== "landing" && view !== "login" && (
-                    <button className="btn-navy" onClick={() => setView("login")}>
+                {!admin && !isLanding && location.pathname !== "/login" && (
+                    <button className="btn-navy" onClick={() => navigate("/login")}>
                         Admin ↗
                     </button>
                 )}

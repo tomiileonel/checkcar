@@ -4,10 +4,10 @@ import React from "react";
 // ADMIN USER MENU — Avatar + nombre + botón Salir
 // ─────────────────────────────────────────────
 
-export default function AdminUserMenu({ admin, setAdmin, setView }) {
+export default function AdminUserMenu({ admin, logoutAdmin, navigate }) {
     const handleLogout = () => {
-        setAdmin(null);
-        setView("client");
+        logoutAdmin();
+        navigate("/");
     };
 
     return (

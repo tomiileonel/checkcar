@@ -1,27 +1,38 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 
 // ─────────────────────────────────────────────
 // ADMIN LOGIN — Formulario de inicio de sesión
 // ─────────────────────────────────────────────
 
-const ADMIN_CREDENTIALS = { user: "admin", pass: "mh1234" };
-
 export default function AdminLogin() {
-    const { setAdmin, setView, notify } = useAppContext();
+    const { loginAdmin, notify } = useAppContext();
+    const navigate = useNavigate();
     const [user, setUser] = useState("");
     const [pass, setPass] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (user === ADMIN_CREDENTIALS.user && pass === ADMIN_CREDENTIALS.pass) {
-            setAdmin({ name: "Administrador", role: "admin" });
-            setView("admin");
+        if (!user.trim() || !pass.trim()) {
+            setError("Complete ambos campos");
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+
+        try {
+            await loginAdmin(user.trim(), pass);
             notify("Sesión iniciada correctamente");
-        } else {
-            setError("Credenciales incorrectas");
+            navigate("/admin/dashboard");
+        } catch (err) {
+            setError(err.message || "Credenciales incorrectas");
             notify("Credenciales incorrectas", "error");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -40,7 +51,7 @@ export default function AdminLogin() {
                     ACCESO <span style={{ color: "var(--red)" }}>ADMIN</span>
                 </h1>
                 <p style={{ color: "var(--text-muted)", fontSize: 13, marginTop: 4 }}>
-                    Ingrese sus credenciales de administrador
+                    Ingrese su nombre de usuario y la contraseña de admin
                 </p>
             </div>
 
@@ -58,11 +69,11 @@ export default function AdminLogin() {
                             marginBottom: 6,
                         }}
                     >
-                        Usuario
+                        Nombre de usuario
                     </label>
                     <input
                         className="input-field"
-                        placeholder="admin"
+                        placeholder="Ej: Juan, María, Carlos..."
                         value={user}
                         onChange={(e) => { setUser(e.target.value); setError(""); }}
                     />
@@ -107,8 +118,8 @@ export default function AdminLogin() {
                     </div>
                 )}
 
-                <button className="btn-red" type="submit" style={{ width: "100%" }}>
-                    Iniciar Sesión
+                <button className="btn-red" type="submit" style={{ width: "100%" }} disabled={loading}>
+                    {loading ? "Iniciando..." : "Iniciar Sesión"}
                 </button>
             </form>
         </div>
