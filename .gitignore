@@ -31,3 +31,7 @@ yarn-error.log*
 
 # Server dependencies (separate from frontend)
 server/node_modules/
+
+# Reference files (not needed in repo)
+Mega_landing/
+checkcar/
