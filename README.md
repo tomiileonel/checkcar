@@ -170,3 +170,10 @@ Distribuido bajo la licencia MIT. Ver `LICENSE` para más información.
 <p align="center">
   Hecho con ❤️ por <strong>CheckCar MH</strong>
 </p>
+
+---
+
+<div align="center">
+  <h2><b>❬ LR ❭</b></h2>
+  <p>&copy; 2026 <b>Tomás Leonel Ramón</b>. Todos los derechos reservados.</p>
+</div>
