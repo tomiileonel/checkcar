@@ -130,13 +130,6 @@ La aplicación estará disponible en `http://localhost:5173`
 | `npm run build` | Genera el bundle de producción en `/dist` |
 | `npm run preview` | Previsualiza el build de producción |
 
----
-
-## 🖥️ Capturas de pantalla
-
-> _Próximamente — Capturas de la landing page, dashboard y formularios._
-
----
 
 ## 🗺️ Roadmap
 
@@ -158,12 +151,6 @@ Las contribuciones son bienvenidas. Para cambios importantes:
 3. Haz commit de tus cambios (`git commit -m 'feat: agregar nueva funcionalidad'`)
 4. Haz push a la rama (`git push origin feature/nueva-funcionalidad`)
 5. Abre un Pull Request
-
----
-
-## 📄 Licencia
-
-Distribuido bajo la licencia MIT. Ver `LICENSE` para más información.
 
 ---
 
